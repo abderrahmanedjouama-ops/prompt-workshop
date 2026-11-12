@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فن هندسة الأوامر | نادي الليثيوم - جامعة محمد خيضر بسكرة</title>
+  <meta name="description" content="سجّل الآن في ورشة فن هندسة الأوامر: أسرار التحدث مع الذكاء الاصطناعي باحترافية - تقديم المهندس عبد الرحمان جوامع - نادي الليثيوم" />
+
+  <!-- ════ CDN DEPENDENCIES ════ -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ══ DESIGN TOKENS ══ */
+    :root {
+      --clr-bg:      #07071A;
+      --clr-bg2:     #0D0D2B;
+      --clr-primary: #6C63FF;
+      --clr-cyan:    #00D4FF;
+      --clr-orange:  #FF6B35;
+      --clr-gold:    #FFD166;
+      --clr-text:    #E8E8F0;
+      --clr-muted:   #8888AA;
+      --clr-glass:   rgba(108,99,255,0.07);
+      --clr-glass-b: rgba(108,99,255,0.25);
+      --radius-lg:   1.25rem;
+      --radius-xl:   2rem;
+      --shadow-glow: 0 0 40px rgba(108,99,255,0.35), 0 0 80px rgba(0,212,255,0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--clr-bg);
+      color: var(--clr-text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      direction: rtl;
+    }
+
+    /* ══ BACKGROUND ELEMENTS ══ */
+    #stars-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .18;
+      pointer-events: none;
+      animation: orbFloat 12s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    .orb-1 { width: 600px; height: 600px; background: var(--clr-primary); top: -15%; right: -10%; }
+    .orb-2 { width: 400px; height: 400px; background: var(--clr-cyan); bottom: 10%; left: -8%; animation-delay: 3s; }
+    .orb-3 { width: 300px; height: 300px; background: var(--clr-orange); bottom: 30%; right: 20%; animation-delay: 6s; }
+
+    @keyframes orbFloat {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(30px,-40px) scale(1.08); }
+    }
+
+    .grid-overlay {
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(108,99,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108,99,255,.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ══ GLASS & NEON UTILITIES ══ */
+    .glass {
+      background: var(--clr-glass);
+      border: 1px solid var(--clr-glass-b);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .glass-sm {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius-lg);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--clr-primary), var(--clr-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gradient-text-orange {
+      background: linear-gradient(135deg, var(--clr-orange), var(--clr-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .neon-border {
+      position: relative;
+      overflow: hidden;
+    }
+    .neon-border::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: conic-gradient(from var(--angle, 0deg), transparent 20%, var(--clr-primary) 40%, var(--clr-cyan) 60%, transparent 80%);
+      border-radius: inherit;
+      animation: rotateAngle 4s linear infinite;
+      z-index: -1;
+    }
+    .neon-border::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--clr-bg2);
+      border-radius: calc(var(--radius-xl) - 2px);
+      z-index: -1;
+    }
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    @keyframes rotateAngle { to { --angle: 360deg; } }
+
+    /* ══ BUTTONS ══ */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      padding: .9rem 2.2rem;
+      background: linear-gradient(135deg, var(--clr-primary), #4B44E0);
+      color: #fff;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s, box-shadow .3s;
+      box-shadow: 0 4px 25px rgba(108,99,255,.5);
+      letter-spacing: .02em;
+      width: 100%;
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      transition: left .5s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 40px rgba(108,99,255,.7);
+    }
+    .btn-primary:hover::before { left: 100%; }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: .75rem 1.8rem;
+      background: transparent;
+      color: var(--clr-cyan);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 1.5px solid var(--clr-cyan);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .3s;
+      box-shadow: 0 0 15px rgba(0,212,255,.15);
+    }
+    .btn-secondary:hover {
+      background: rgba(0,212,255,.12);
+      box-shadow: 0 0 25px rgba(0,212,255,.35);
+    }
+
+    /* ══ FORM CONTROLS ══ */
+    .form-input {
+      width: 100%;
+      padding: .85rem 1.2rem;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: .85rem;
+      color: var(--clr-text);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: all .3s;
+      direction: rtl;
+    }
+    .form-input:focus {
+      border-color: var(--clr-cyan);
+      background: rgba(0,212,255,.05);
+      box-shadow: 0 0 20px rgba(0,212,255,.25);
+    }
+    .form-input::placeholder { color: var(--clr-muted); font-size: .95rem; }
+    select.form-input option { background: var(--clr-bg2); color: var(--clr-text); }
+    .input-group { display: flex; flex-direction: column; gap: .4rem; }
+    .input-label { font-size: .875rem; font-weight: 600; color: var(--clr-muted); transition: color .2s; }
+    .has-icon { position: relative; }
+    .has-icon .form-input { padding-right: 2.8rem; }
+    .input-icon {
+      position: absolute;
+      right: .9rem; top: 50%;
+      transform: translateY(-50%);
+      color: var(--clr-muted);
+      pointer-events: none;
+    }
+
+    /* ══ SPINNER & FEEDBACK ══ */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ══ TOAST NOTIFICATIONS ══ */
+    #toast-container {
+      position: fixed;
+      top: 1.5rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      pointer-events: none;
+      width: max-content;
+      max-width: 90vw;
+    }
+    .toast {
+      padding: .85rem 1.6rem;
+      border-radius: 999px;
+      font-size: .95rem;
+      font-weight: 600;
+      box-shadow: 0 10px 40px rgba(0,0,0,.6);
+      animation: toastIn .4s cubic-bezier(.16,1,.3,1) forwards;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .toast-success { background: #064E3B; border: 1px solid #10B981; color: #6EFFC5; }
+    .toast-error   { background: #4C0519; border: 1px solid #F43F5E; color: #FDA4AF; }
+    .toast-warning { background: #451A03; border: 1px solid #F59E0B; color: #FCD34D; }
+    .toast-exit    { animation: toastOut .3s ease-in forwards; }
+    @keyframes toastIn  { from { opacity:0; transform:translateY(-16px) scale(.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes toastOut { from { opacity:1; transform:translateY(0) scale(1); } to { opacity:0; transform:translateY(-16px) scale(.9); } }
+
+    /* ══ PAGE ANIMATION & CARDS ══ */
+    .page { position: relative; z-index: 10; animation: fadeUp .6s cubic-bezier(.16,1,.3,1) forwards; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(32px); } to { opacity:1; transform:translateY(0); } }
+
+    #qr-container canvas, #qr-container img {
+      border-radius: 1rem;
+      max-width: 220px;
+      max-height: 220px;
+    }
+    #qr-container {
+      display: flex;
+      justify-content: center;
+      padding: 1.4rem;
+      background: white;
+      border-radius: 1.25rem;
+      width: fit-content;
+      margin: 0 auto;
+      box-shadow: 0 0 35px rgba(108,99,255,.5), 0 0 70px rgba(0,212,255,.2);
+    }
+
+    .pulse-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .pulse-ring::before, .pulse-ring::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 2px solid var(--clr-primary);
+      animation: pulseRing 2s ease-out infinite;
+    }
+    .pulse-ring::after { animation-delay: 1s; }
+    @keyframes pulseRing {
+      0%   { transform: scale(.9); opacity: .6; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .35rem 1rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+    .badge-cyan   { background: rgba(0,212,255,.12); border: 1px solid rgba(0,212,255,.4); color: var(--clr-cyan); }
+    .badge-orange { background: rgba(255,107,53,.12); border: 1px solid rgba(255,107,53,.4); color: var(--clr-orange); }
+
+    .info-pill {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .65rem 1.1rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: .875rem;
+      color: var(--clr-muted);
+    }
+    .info-pill span { color: var(--clr-text); font-weight: 600; }
+
+    #reader { border-radius: 1rem; overflow: hidden; }
+    #reader video { border-radius: 1rem !important; }
+    #html5-qrcode-button-camera-permission,
+    #html5-qrcode-button-camera-stop,
+    #html5-qrcode-button-file-selection {
+      background: var(--clr-primary) !important;
+      color: white !important;
+      border: none !important;
+      padding: .6rem 1.5rem !important;
+      border-radius: 999px !important;
+      font-family: 'Tajawal', sans-serif !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      margin: .4rem !important;
+    }
+
+    .feature-card {
+      padding: 1.25rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 1rem;
+      transition: all .3s;
+      cursor: default;
+    }
+    .feature-card:hover {
+      background: rgba(108,99,255,.08);
+      border-color: rgba(108,99,255,.3);
+      transform: translateY(-3px);
+    }
+
+    .scanline-anim { position: relative; overflow: hidden; }
+    .scanline-anim::after {
+      content: '';
+      position: absolute; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--clr-cyan), transparent);
+      animation: scanline 2s ease-in-out infinite;
+      box-shadow: 0 0 10px var(--clr-cyan);
+    }
+    @keyframes scanline { 0% { top:0%; opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { top:100%; opacity:0; } }
+
+    .attendee-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .85rem 1.25rem;
+      border-radius: .85rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      transition: all .2s;
+      animation: fadeUp .4s ease forwards;
+    }
+    .attendee-row:hover {
+      background: rgba(108,99,255,.07);
+      border-color: rgba(108,99,255,.25);
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(108,99,255,.4); border-radius: 999px; }
+
+    /* ── Glowing Club Logo Capsule ── */
+    .club-logo-capsule {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border-radius: 2rem;
+      background: radial-gradient(circle at center, rgba(0, 212, 255, 0.15) 0%, rgba(108, 99, 255, 0.05) 70%, transparent 100%);
+      border: 1px solid rgba(0, 212, 255, 0.35);
+      box-shadow: 0 0 35px rgba(0, 212, 255, 0.35), inset 0 0 20px rgba(108, 99, 255, 0.2);
+    }
+    .club-logo-img {
+      width: 95px;
+      height: 95px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 16px rgba(0, 212, 255, 0.75));
+    }
+
+    /* ── Presenter Photo ── */
+    .presenter-photo {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--clr-primary);
+      box-shadow: 0 0 20px rgba(108, 99, 255, 0.5);
+    }
+
+    /* ── Club Title Glow ── */
+    .club-title-glow {
+      font-family: 'Orbitron', 'Tajawal', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #FFFFFF 0%, var(--clr-cyan) 50%, var(--clr-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 35px rgba(0, 212, 255, 0.45);
+    }
+
+    /* ── Shake Animation on Password Error ── */
+    .shake {
+      animation: shakeAnim 0.55s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes shakeAnim {
+      10%, 90% { transform: translate3d(-2px, 0, 0); }
+      20%, 80% { transform: translate3d(3px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+      40%, 60% { transform: translate3d(5px, 0, 0); }
+    }
+
+    /* ── Interactive Teaser Tab Active States ── */
+    .teaser-tab-active {
+      background: linear-gradient(135deg, var(--clr-primary), var(--clr-cyan)) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 20px rgba(0,212,255,0.4);
+    }
+    .teaser-tab-bad-active {
+      background: linear-gradient(135deg, #EF4444, #B91C1C) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 20px rgba(239,68,68,0.4);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background layers -->
+  <canvas id="stars-canvas"></canvas>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div id="toast-container"></div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       1. MAIN REGISTRATION VIEW (Strict wrapper: id="main-view")
+  ════════════════════════════════════════════════════════════ -->
+  <div id="main-view">
+    <section class="page relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-16">
+
+      <!-- ══ CLUB HEADER BLOCK ══ -->
+      <div class="w-full max-w-5xl flex flex-col items-center mb-10 px-2 text-center">
+
+        <!-- Glowing Club Logo -->
+        <div class="mb-5">
+          <div class="club-logo-capsule">
+            <img
+              src="assets/club-logo.png"
+              onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Lithium+Club&background=00D4FF&color=0D0D2B&size=128';"
+              alt="شعار نادي الليثيوم - Lithium Technology Club"
+              class="club-logo-img"
+            />
+          </div>
+        </div>
+
+        <!-- Big glowing club title -->
+        <h1 class="club-title-glow mb-1">LITHIUM CLUB</h1>
+        <p class="font-bold text-2xl mb-3" style="color:var(--clr-text);letter-spacing:.03em;">نادي الليثيوم للتقنية والابتكار</p>
+        <div style="width:140px;height:3px;border-radius:999px;background:linear-gradient(90deg,var(--clr-primary),var(--clr-cyan));box-shadow:0 0 20px rgba(108,99,255,.8);"></div>
+
+        <!-- Live badge -->
+        <div class="badge badge-orange mt-4">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--clr-orange);display:inline-block;animation:pulse 1.5s infinite;"></span>
+          التسجيل مفتوح الآن — الدخول بتذكرة QR رقمية
+        </div>
+      </div>
+
+      <!-- ══ CONTENT GRID ══ -->
+      <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+
+        <!-- ── COLUMN 1: WORKSHOP DETAILS, PRESENTER & INTERACTIVE TEASER ── -->
+        <div class="flex flex-col gap-6 order-2 lg:order-1">
+          <div class="badge badge-cyan" style="width:fit-content;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+            جامعة محمد خيضر بسكرة • نادي الليثيوم
+          </div>
+
+          <div>
+            <h2 class="text-4xl sm:text-5xl font-black mb-3" style="line-height:1.25;">
+              <span class="gradient-text">فن هندسة الأوامر</span><br>
+              <span style="color:var(--clr-text);">أسرار التحدث مع الذكاء الاصطناعي</span>
+            </h2>
+            <p class="text-base sm:text-lg" style="color:var(--clr-muted);font-weight:400;line-height:1.6;">
+              ورشة تدريبية تطبيقية مكثفة لاكتشاف كيف تصيغ برومبتات ذكية ودقيقة تضاعف إنتاجيتك في الدراسة والبرمجة والبحث.
+            </p>
+          </div>
+
+          <!-- ══ EVENT INFO PILLS (DATE, TIME, LOCATION, LIVE SEATS) ══ -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div class="info-pill">
+              <span class="text-xl">📅</span>
+              <div>
+                <p class="text-xs" style="color:var(--clr-muted)">التاريخ</p>
+                <span class="text-sm">السبت، 15 نوفمبر 2026</span>
+              </div>
+            </div>
+            <div class="info-pill">
+              <span class="text-xl">⏰</span>
+              <div>
+                <p class="text-xs" style="color:var(--clr-muted)">التوقيت</p>
+                <span class="text-sm">14:00 - 16:30 (ساعتان ونصف)</span>
+              </div>
+            </div>
+            <div class="info-pill">
+              <span class="text-xl">📍</span>
+              <div>
+                <p class="text-xs" style="color:var(--clr-muted)">المكان</p>
+                <span class="text-sm">جامعة محمد خيضر بسكرة</span>
+              </div>
+            </div>
+            <!-- Live Seat Counter Pill -->
+            <div class="info-pill" id="seat-counter-pill">
+              <span class="text-xl">💺</span>
+              <div>
+                <p class="text-xs" style="color:var(--clr-muted)">المقاعد المتبقية</p>
+                <span class="text-sm font-bold text-cyan-400" id="seats-left-count">جارٍ التحقق...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ PRESENTER CARD (المهندس عبد الرحمان جوامع) ══ -->
+          <div class="glass-sm p-5 flex items-center gap-4">
+            <div class="relative pulse-ring" style="flex-shrink:0;">
+              <img
+                src="assets/presenter.jpg"
+                onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=%D8%B9%D8%A8%D8%AF+%D8%A7%D9%84%D8%B1%D8%AD%D9%85%D8%A7%D9%86+%D8%AC%D9%88%D8%A7%D9%85%D8%B9&background=6C63FF&color=fff&size=128';"
+                alt="المهندس عبد الرحمان جوامع"
+                class="presenter-photo"
+              />
+            </div>
+            <div class="flex-1">
+              <p style="color:var(--clr-muted);font-size:.8rem;">تقديم وإشراف</p>
+              <p class="font-bold text-xl text-white">المهندس عبد الرحمان جوامع</p>
+              <div class="flex flex-wrap items-center gap-2 mt-1">
+                <span class="badge" style="background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);color:var(--clr-cyan);font-size:.75rem;padding:.2rem .75rem;">
+                  مقدم الدورة
+                </span>
+                <span style="color:var(--clr-muted);font-size:.82rem;">مدرب ومحتوى هندسي وتقني</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ INTERACTIVE PROMPT TEASER ══ -->
+          <div class="glass-sm p-4 relative overflow-hidden" id="prompt-teaser-box">
+            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">⚡</span>
+                <h4 class="text-sm font-bold text-white">جرّب الفرق بنفسك: قوة هندسة الأوامر</h4>
+              </div>
+              <!-- Toggle Pills -->
+              <div class="flex gap-1.5 p-1 rounded-full bg-black/40 border border-white/10 text-xs">
+                <button
+                  type="button"
+                  id="tab-bad-prompt"
+                  onclick="setTeaserMode('bad')"
+                  class="px-3 py-1 rounded-full font-bold transition teaser-tab-bad-active"
+                >
+                  برومبت عادي ❌
+                </button>
+                <button
+                  type="button"
+                  id="tab-good-prompt"
+                  onclick="setTeaserMode('good')"
+                  class="px-3 py-1 rounded-full font-bold transition text-gray-400 hover:text-white"
+                >
+                  برومبت هندسي احترافي ⚡
+                </button>
+              </div>
+            </div>
+
+            <!-- Content Window -->
+            <div class="p-3.5 rounded-xl bg-black/50 border border-white/10 text-xs leading-relaxed font-mono text-gray-300 min-h-[110px]" id="teaser-content-box">
+              <div class="text-red-400 font-bold mb-1">البرومبت التقليدي:</div>
+              <p class="text-gray-200">"اكتب لي كود بايثون لتسجيل الدخول في موقع ويب وكيف أحفظ البيانات"</p>
+              <div class="mt-2 text-gray-400 border-t border-white/10 pt-2 text-[11px]">
+                ⚠️ <strong class="text-yellow-300">النتيجة:</strong> كود بدائي، بدون معايير أمان، بدون تجزئة كلمات مرور، ويتطلب 4 رسائل إضافية لإصلاحه!
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ WORKSHOP TOPIC FEATURE CARDS ══ -->
+          <div>
+            <h4 class="text-sm font-bold uppercase tracking-wider mb-3" style="color:var(--clr-muted);">
+              محاور الورشة التطبيقية:
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="feature-card">
+                <div class="text-2xl mb-2">🧠</div>
+                <p class="font-bold text-sm text-white">هيكلة الأوامر المتقدمة</p>
+                <p style="color:var(--clr-muted);font-size:.78rem;margin-top:.25rem;line-height:1.5;">
+                  أطر Few-Shot و Role Framing لتوجيه مخرجات الذكاء الاصطناعي بدقة متناهية.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="text-2xl mb-2">⚡</div>
+                <p class="font-bold text-sm text-white">سلاسل التفكير (CoT)</p>
+                <p style="color:var(--clr-muted);font-size:.78rem;margin-top:.25rem;line-height:1.5;">
+                  تقنيات Chain of Thought لحل المشكلات البرمجية والتحليلية دون أخطاء وهلوسة.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="text-2xl mb-2">💻</div>
+                <p class="font-bold text-sm text-white">تسريع البرمجة والإنتاجية</p>
+                <p style="color:var(--clr-muted);font-size:.78rem;margin-top:.25rem;line-height:1.5;">
+                  بناء سير عمل أوتوماتيكي ومساعد برمجي ذكي مخصص لاحتياجاتك الجامعية والمهنية.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="text-2xl mb-2">🎫</div>
+                <p class="font-bold text-sm text-white">تطبيق عملي وتذكرة معتمدة</p>
+                <p style="color:var(--clr-muted);font-size:.78rem;margin-top:.25rem;line-height:1.5;">
+                  تجارب حية أثناء الورشة مع تأكيد الحضور الفوري عبر تذكرة QR كود الذكية.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── COLUMN 2: REGISTRATION FORM ── -->
+        <div class="order-1 lg:order-2">
+          <div class="neon-border glass p-7 sm:p-9" id="form-card">
+            <div class="mb-7 text-center">
+              <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style="background:linear-gradient(135deg,var(--clr-primary),var(--clr-cyan));box-shadow:0 0 25px rgba(108,99,255,.5);">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <h3 class="text-2xl font-black mb-1">سجّل الآن <span class="gradient-text">واحجز تذكرتك</span></h3>
+              <p style="color:var(--clr-muted);font-size:.875rem;">املأ بياناتك وسيتم توليد تذكرة QR وإرسالها فوراً إلى بريدك</p>
+            </div>
+
+            <form id="reg-form" novalidate>
+              <div class="flex flex-col gap-4">
+                
+                <!-- Full Name -->
+                <div class="input-group">
+                  <label class="input-label" for="full_name">الاسم واللقب</label>
+                  <div class="relative has-icon">
+                    <span class="input-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </span>
+                    <input type="text" id="full_name" class="form-input" placeholder="مثال: عبد الرحمان جوامع" required />
+                  </div>
+                </div>
+
+                <!-- Email -->
+                <div class="input-group">
+                  <label class="input-label" for="email">البريد الإلكتروني (لتلقي التذكرة)</label>
+                  <div class="relative has-icon">
+                    <span class="input-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </span>
+                    <input type="email" id="email" class="form-input text-left" placeholder="name@example.com" dir="ltr" required />
+                  </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="input-group">
+                  <label class="input-label" for="phone">رقم الهاتف</label>
+                  <div class="relative has-icon">
+                    <span class="input-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </span>
+                    <input type="tel" id="phone" class="form-input text-left" placeholder="05XXXXXXXX / 06XXXXXXXX" dir="ltr" required />
+                  </div>
+                </div>
+
+                <!-- Academic Level / Specialty -->
+                <div class="input-group">
+                  <label class="input-label" for="academic_level">المستوى الدراسي / التخصص</label>
+                  <div class="relative has-icon">
+                    <span class="input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    </span>
+                    <select id="academic_level" class="form-input" required>
+                      <option value="" disabled selected>اختر مستواك الدراسي وتخصصك</option>
+                      <option value="ليسانس - إعلام آلي / رياضيات">ليسانس - إعلام آلي / رياضيات</option>
+                      <option value="ليسانس - علوم وتقنيات / هندسة">ليسانس - علوم وتقنيات / هندسة</option>
+                      <option value="ماستر - ذكاء اصطناعي / بيانات">ماستر - ذكاء اصطناعي / بيانات</option>
+                      <option value="ماستر - هندسة البرمجيات والشبكات">ماستر - هندسة البرمجيات والشبكات</option>
+                      <option value="تخصصات علمية أخرى (طب، صيدلة، علوم)">تخصصات علمية أخرى (طب، صيدلة، علوم)</option>
+                      <option value="علوم اقتصادية وإدارية وإنسانية">علوم اقتصادية وإدارية وإنسانية</option>
+                      <option value="باحث / طالب دكتوراه">باحث / طالب دكتوراه</option>
+                      <option value="متخرج / ممارس ومهني تقني">متخرج / ممارس ومهني تقني</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- AI Experience -->
+                <div class="input-group">
+                  <label class="input-label" for="ai_experience">مستواك الحالي في التعامل مع الذكاء الاصطناعي</label>
+                  <div class="relative has-icon">
+                    <span class="input-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                    </span>
+                    <select id="ai_experience" class="form-input" required>
+                      <option value="" disabled selected>اختر مستوى خبرتك</option>
+                      <option value="مبتدئ تماماً (أول مرة أتعلم عنه)">مبتدئ تماماً (أول مرة أتعلم عنه)</option>
+                      <option value="مستخدم عادي (استفسارات ومحادثة بسيطة)">مستخدم عادي (استفسارات ومحادثة بسيطة)</option>
+                      <option value="متوسط (أستخدمه أسبوعياً في الدراسة/العمل)">متوسط (أستخدمه أسبوعياً في الدراسة/العمل)</option>
+                      <option value="متقدم (أكتب برومبتات هيكلية وأكواد وأتمتة)">متقدم (أكتب برومبتات هيكلية وأكواد وأتمتة)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <p style="color:var(--clr-muted);font-size:.78rem;text-align:center;line-height:1.6;margin-top:.25rem;">
+                  🔒 بياناتك مؤمنة. فور التسجيل ستظهر تذكرتك المعتمدة ويتم إرسال نسخة رسمية لبريدك.
+                </p>
+
+                <!-- Submit Button with Spinner -->
+                <button type="submit" id="submit-btn" class="btn-primary mt-2">
+                  <span id="btn-text">🚀 تأكيد التسجيل وحجز التذكرة</span>
+                  <span id="btn-spinner" class="spinner hidden"></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom info pills & Subtle Admin Access -->
+      <div class="w-full max-w-5xl mt-14 flex flex-wrap gap-3 justify-center items-center">
+        <div class="info-pill">🎓 <span>ورشة حضورية تفاعلية</span></div>
+        <div class="info-pill">⚡ <span>تطبيق فوري لأوامر AI</span></div>
+        <div class="info-pill">📍 <span>جامعة محمد خيضر بسكرة</span></div>
+        <button type="button" onclick="openAdmin()" class="info-pill hover:border-orange-400 cursor-pointer transition" style="background:rgba(255,107,53,0.12); border-color:rgba(255,107,53,0.35); color:var(--clr-orange);">
+          🔐 <span>لوحة المسؤول</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       2. TICKET VIEW (VIP CYBER PASS — id="ticket-view")
+  ════════════════════════════════════════════════════════════ -->
+  <div id="ticket-view" style="display: none;" class="min-h-screen flex items-center justify-center px-4 py-16">
+    <div class="page w-full max-w-xl text-center">
+      
+      <!-- Success Icon -->
+      <div class="flex justify-center mb-5">
+        <div class="relative">
+          <div class="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style="background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(0,212,255,.2));border:2px solid rgba(16,185,129,.5);box-shadow:0 0 50px rgba(16,185,129,.4);">
+            ✅
+          </div>
+          <div class="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs" style="background:var(--clr-cyan);color:#000;font-weight:900;animation:spin 3s linear infinite;">★</div>
+        </div>
+      </div>
+
+      <h2 class="text-3xl font-black mb-1">تم تأكيد حجزك <span class="gradient-text">بنجاح!</span></h2>
+      <p id="ticket-name-msg" style="color:var(--clr-muted);" class="text-base mb-6">أهلاً بك في رحلة احتراف هندسة الأوامر 🎉</p>
+
+      <!-- VIP Cyber Pass Card -->
+      <div class="glass p-6 sm:p-8 mb-6 text-right relative overflow-hidden" id="ticket-card">
+        
+        <!-- Ticket Header -->
+        <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
+          <div class="flex items-center gap-3">
+            <img src="assets/club-logo.png" onerror="this.src='https://ui-avatars.com/api/?name=LC&background=00D4FF&color=0D0D2B';" alt="Lithium Club" class="w-11 h-11 object-contain" />
+            <div>
+              <p class="font-bold text-sm text-white">LITHIUM TECHNOLOGY CLUB</p>
+              <p style="color:var(--clr-cyan); font-size:0.75rem;">تذكرة دخول رسمية معتمدة (VIP Pass)</p>
+            </div>
+          </div>
+          <div class="text-left">
+            <span class="badge badge-cyan" id="ticket-code-badge">LC-PE-001</span>
+          </div>
+        </div>
+
+        <!-- Event & Student Summary -->
+        <div class="mb-5 space-y-2">
+          <h3 class="text-lg font-black text-white gradient-text">فن هندسة الأوامر: أسرار التحدث مع الذكاء الاصطناعي</h3>
+          <p style="color:var(--clr-muted); font-size:0.85rem;">إشراف وتقديم: <strong class="text-white">المهندس عبد الرحمان جوامع</strong></p>
+          
+          <div class="grid grid-cols-2 gap-2 pt-2 text-xs text-gray-300">
+            <p>📅 <strong>السبت، 15 نوفمبر 2026</strong></p>
+            <p>⏰ <strong>14:00 - 16:30</strong></p>
+            <p>📍 <strong>جامعة محمد خيضر بسكرة</strong></p>
+            <p>👤 الحضور: <strong id="ticket-attendee-name" class="text-white">-</strong></p>
+            <p>🎓 المستوى: <span id="ticket-attendee-level" class="text-gray-300">-</span></p>
+            <p>⚡ الخبرة: <span id="ticket-attendee-exp" class="text-gray-300">-</span></p>
+          </div>
+        </div>
+
+        <!-- QR Display Section -->
+        <div class="text-center py-4 bg-black/35 rounded-2xl border border-white/5 mb-5">
+          <p class="font-bold text-sm mb-1" style="color:var(--clr-cyan);">📲 رمز الاستجابة السريعة (QR Code)</p>
+          <p style="color:var(--clr-muted); font-size:0.78rem; margin-bottom:1rem;">أبرز هذا الرمز عند مدخل القاعة لتسجيل حضورك الفوري</p>
+          
+          <div class="scanline-anim rounded-2xl p-1 mb-3" style="background:rgba(108,99,255,.1);border:1px solid rgba(108,99,255,.3);display:inline-block;">
+            <div id="qr-container"></div>
+          </div>
+
+          <div id="ticket-id" style="font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--clr-muted);word-break:break-all;padding:.4rem .8rem;background:rgba(0,0,0,.4);border-radius:.5rem;display:inline-block;max-width:90%;"></div>
+        </div>
+
+        <!-- Email Delivery Status Badge -->
+        <div class="p-3 rounded-xl border flex items-center justify-between flex-wrap gap-2 text-xs" id="email-delivery-banner" style="background:rgba(0,212,255,0.06);border-color:rgba(0,212,255,0.25);">
+          <div class="flex items-center gap-2">
+            <span style="font-size:1.1rem;">✉️</span>
+            <span id="email-delivery-text" class="text-gray-200">جارٍ إرسال نسخة التذكرة إلى بريدك الإلكتروني...</span>
+          </div>
+          <span id="email-delivery-status-indicator" class="text-cyan-400 font-bold">⚡ جاري الإرسال</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button id="download-ticket-btn" class="btn-primary flex-1">
+          ⬇️ تحميل التذكرة الرسمية (PNG)
+        </button>
+        <button id="back-to-home-btn" class="btn-secondary flex-1">
+          🏠 العودة للرئيسية
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       3. ADMIN SCANNER & DASHBOARD VIEW (id="admin-view")
+  ════════════════════════════════════════════════════════════ -->
+  <div id="admin-view" style="display: none;" class="min-h-screen px-4 py-8">
+    
+    <!-- Admin Header -->
+    <div class="page max-w-4xl mx-auto mb-6">
+      <div class="glass p-6 flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--clr-orange),var(--clr-gold));">
+            🔐
+          </div>
+          <div>
+            <h1 class="text-xl font-black gradient-text-orange">لوحة تحكم المسؤول وإدارة الحضور</h1>
+            <p style="color:var(--clr-muted);font-size:.8rem;">ورشة هندسة الأوامر • نادي الليثيوم (جامعة بسكرة)</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button type="button" onclick="closeAdmin()" class="btn-secondary" style="padding:0.45rem 1.1rem;font-size:0.85rem;">
+            ↩️ العودة للرئيسية
+          </button>
+          <button type="button" onclick="logoutAdmin()" class="btn-secondary" style="padding:0.45rem 0.9rem;font-size:0.85rem;border-color:rgba(239,68,68,0.4);color:#FCA5A5;">
+            🔒 قفل اللوحة
+          </button>
+          <div class="badge badge-orange">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--clr-orange);display:inline-block;animation:pulse 1.5s infinite;"></span>
+            وضع المسؤول
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LIVE 4-KPIs DASHBOARD ══ -->
+    <div class="page max-w-4xl mx-auto mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <!-- Total Registered -->
+      <div class="glass-sm p-4 text-center">
+        <p class="text-3xl font-black gradient-text" id="kpi-total">0</p>
+        <p style="color:var(--clr-muted);font-size:.78rem;margin-top:.25rem;">إجمالي المسجلين</p>
+      </div>
+      <!-- Total Attended -->
+      <div class="glass-sm p-4 text-center">
+        <p class="text-3xl font-black" style="color:#6EFFC5;" id="kpi-attended">0</p>
+        <p style="color:var(--clr-muted);font-size:.78rem;margin-top:.25rem;">إجمالي الحاضرين</p>
+      </div>
+      <!-- Attendance Rate % -->
+      <div class="glass-sm p-4 text-center">
+        <p class="text-3xl font-black" style="color:var(--clr-cyan);" id="kpi-rate">0%</p>
+        <p style="color:var(--clr-muted);font-size:.78rem;margin-top:.25rem;">نسبة الحضور</p>
+      </div>
+      <!-- Emails Sent -->
+      <div class="glass-sm p-4 text-center">
+        <p class="text-3xl font-black" style="color:var(--clr-gold);" id="kpi-emails">0</p>
+        <p style="color:var(--clr-muted);font-size:.78rem;margin-top:.25rem;">التذاكر المرسلة</p>
+      </div>
+    </div>
+
+    <!-- ══ CAMERA SCANNER VIEWPORT ══ -->
+    <div class="page max-w-4xl mx-auto mb-6">
+      <div class="glass p-6">
+        <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <span>📸</span> 
+            <span>ماسح الحضور الآلي السريع</span>
+          </h2>
+          <span class="badge" style="background:rgba(0,212,255,0.15); border:1px solid rgba(0,212,255,0.4); color:var(--clr-cyan);">
+            ⚡ تسجيل فوري تلقائي
+          </span>
+        </div>
+        <p style="color:var(--clr-muted);font-size:.85rem;margin-bottom:1.25rem;">
+          وجّه كاميرا الهاتف أو الحاسوب نحو QR الطالب، وسيتم تسجيل حضوره فوراً مع صفير التأكيد وتحديث الإحصائيات.
+        </p>
+        
+        <!-- html5-qrcode mount container -->
+        <div id="reader" class="w-full mb-3 scanline-anim"></div>
+
+        <!-- Scanner status / cooldown indicator -->
+        <div id="scanner-status-indicator" class="text-center text-xs py-1" style="color:var(--clr-muted);">
+          الكاميرا نشطة وجاهزة للمسح 🟢
+        </div>
+
+        <!-- Manual input fallback -->
+        <div class="mt-4 pt-4 border-t border-white/10">
+          <p style="color:var(--clr-muted);font-size:.8rem;margin-bottom:.5rem;text-align:center;">
+            أو أدخل معرّف الطالب (UUID) يدوياً في حال تعذر استخدام الكاميرا
+          </p>
+          <div class="flex gap-2">
+            <input type="text" id="manual-id-input" class="form-input flex-1" placeholder="الصق UUID الطالب هنا..." dir="ltr" />
+            <button id="manual-check-btn" class="btn-secondary" style="white-space:nowrap;padding:.75rem 1.2rem;">
+              تحقق يدوي
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scan result feedback card -->
+    <div class="page max-w-4xl mx-auto mb-6" id="scan-result-card" style="display:none;">
+      <div id="scan-result-inner" class="glass p-6"></div>
+    </div>
+
+    <!-- ══ LIVE ATTENDEES TABLE WITH SEARCH & CSV EXPORT ══ -->
+    <div class="page max-w-4xl mx-auto">
+      <div class="glass p-6">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div class="flex items-center gap-2">
+            <h2 class="text-xl font-bold">📋 قائمة الحاضرين والمسجلين</h2>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-white/10 text-gray-300" id="attendees-count-badge">0</span>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <button id="export-csv-btn" class="btn-secondary" style="padding:.45rem 1rem;font-size:.85rem;border-color:rgba(16,185,129,0.5);color:#6EFFC5;">
+              📊 تصدير CSV
+            </button>
+            <button id="refresh-list-btn" class="btn-secondary" style="padding:.45rem 1rem;font-size:.85rem;">
+              🔄 تحديث
+            </button>
+          </div>
+        </div>
+
+        <!-- Search input -->
+        <div class="mb-4">
+          <input
+            type="text"
+            id="attendee-search-input"
+            class="form-input"
+            placeholder="🔍 ابحث بالاسم، البريد، رقم الهاتف، أو رقم التذكرة..."
+          />
+        </div>
+
+        <!-- List container using .attendee-row -->
+        <div id="attendees-list" class="flex flex-col gap-2.5 max-h-96 overflow-y-auto pr-1">
+          <p style="color:var(--clr-muted);text-align:center;padding:2rem;">جارٍ تحميل قائمة المسجلين...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       4. ADMIN PASSWORD AUTH MODAL (.shake support on error)
+  ════════════════════════════════════════════════════════════ -->
+  <div id="admin-auth-modal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-md">
+    <div id="admin-auth-box" class="relative w-full max-w-md p-7 sm:p-8 glass neon-border shadow-2xl text-center page">
+      
+      <!-- Lock Icon with Glow -->
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center text-3xl shadow-[0_0_25px_rgba(255,107,53,0.5)]" style="background: linear-gradient(135deg, var(--clr-orange), var(--clr-gold));">
+        🔐
+      </div>
+
+      <h3 class="text-2xl font-black mb-1 gradient-text-orange">منطقة المسؤولين فقط</h3>
+      <p style="color:var(--clr-muted); font-size: 0.9rem;" class="mb-6">أدخل رمز الدخول (PIN) لفتح لوحة مسح حضور الفعالية</p>
+
+      <form id="admin-auth-form" onsubmit="event.preventDefault(); verifyAdminPassword();">
+        <div class="input-group mb-5">
+          <label class="input-label text-right" for="admin-pass-input">رمز الدخول السري (PIN)</label>
+          <div class="relative has-icon">
+            <span class="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input 
+              type="password" 
+              id="admin-pass-input" 
+              class="form-input text-center font-mono tracking-widest text-lg" 
+              placeholder="••••" 
+              dir="ltr"
+              autocomplete="current-password"
+              required 
+            />
+          </div>
+          <p id="admin-auth-error" class="text-red-400 text-xs mt-2 text-right hidden">⚠️ رمز الدخول غير صحيح، حاول مجدداً</p>
+        </div>
+
+        <div class="flex gap-3">
+          <button type="submit" class="btn-primary flex-1" style="background: linear-gradient(135deg, var(--clr-orange), #E65100);">
+            دخول ⚡
+          </button>
+          <button type="button" onclick="closeAdminAuthModal()" class="btn-secondary flex-1" style="border-color: rgba(255,255,255,0.2); color: var(--clr-muted);">
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Offscreen QR rendering buffer -->
+  <div id="qr-hidden" style="display:none;position:fixed;top:-9999px;left:-9999px;"></div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       JAVASCRIPT ARCHITECTURE
+  ════════════════════════════════════════════════════════════ -->
+  <script>
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║     ⚙️  CONFIG — SUPABASE & ADMIN CREDENTIALS           ║
+  // ╚══════════════════════════════════════════════════════════╝
+  const SUPABASE_URL      = 'https://lcbflikefwwzfbkliyyx.supabase.co';
+  const SUPABASE_ANON_KEY  = 'sb_publishable_RBp6AiXB2bXostCRVfWfcw_QePkyuUq';
+  const ADMIN_PIN          = '2026'; // Default fallback PIN
+  const MAX_SEATS          = 300;    // Total seats available for the workshop
+
+  // ── Global State ──────────────────────────────────────────
+  let currentQRDataURL  = null;
+  let currentUserId     = null;
+  let currentTicketData = null;
+  let html5QrScanner    = null;
+  let isScannerRunning  = false;
+  let isScanLocked      = false;
+  let allAttendeesCache = [];
+  let primaryTable      = 'prompt_registrations'; // With fallback support
+
+  // ── Native Web Audio Synthesizer (Instant feedback sound) ─
+  function playAudioFeedback(type = 'success') {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const now = ctx.currentTime;
+
+      if (type === 'success') {
+        // High positive dual-tone chime
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      } else if (type === 'warning') {
+        // Warning buzz tone
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.setValueAtTime(330, now + 0.15);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      } else {
+        // Error buzz tone
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      }
+    } catch (e) {
+      console.warn('Audio feedback error:', e);
+    }
+  }
+
+  // ── Toast Notifications ───────────────────────────────────
+  function showToast(msg, type = 'success', duration = 4000) {
+    const c = document.getElementById('toast-container');
+    if (!c) return;
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`;
+    t.innerHTML = msg;
+    c.appendChild(t);
+    setTimeout(() => {
+      t.classList.add('toast-exit');
+      t.addEventListener('animationend', () => t.remove());
+    }, duration);
+  }
+
+  // ── Safe Supabase Client Initializer ──────────────────────
+  let sb = null;
+  function getSupabase() {
+    if (!sb && typeof supabase !== 'undefined') {
+      if (SUPABASE_URL && SUPABASE_URL.startsWith('http') && !SUPABASE_URL.includes('YOUR_')) {
+        try {
+          sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch(e) {
+          console.warn('Supabase initialization warning:', e);
+        }
+      }
+    }
+    return sb;
+  }
+
+  // ── Stars Canvas Animation ────────────────────────────────
+  (function initStars() {
+    const canvas = document.getElementById('stars-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, stars = [];
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      stars = Array.from({ length: Math.min(100, Math.floor(W / 14)) }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + .3,
+        a: Math.random(),
+        da: (Math.random() - .5) * .008,
+        dx: (Math.random() - .5) * .15,
+        dy: (Math.random() - .5) * .15,
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      stars.forEach(s => {
+        s.x = (s.x + s.dx + W) % W;
+        s.y = (s.y + s.dy + H) % H;
+        s.a = Math.max(.05, Math.min(1, s.a + s.da));
+        if (s.a <= .05 || s.a >= 1) s.da *= -1;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,200,255,${s.a * .7})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    draw();
+  })();
+
+  // ── Interactive Teaser Mode Toggle ────────────────────────
+  window.setTeaserMode = function(mode) {
+    const tabBad  = document.getElementById('tab-bad-prompt');
+    const tabGood = document.getElementById('tab-good-prompt');
+    const box     = document.getElementById('teaser-content-box');
+
+    if (!tabBad || !tabGood || !box) return;
+
+    if (mode === 'good') {
+      tabBad.className  = 'px-3 py-1 rounded-full font-bold transition text-gray-400 hover:text-white';
+      tabGood.className = 'px-3 py-1 rounded-full font-bold transition teaser-tab-active';
+      box.innerHTML = `
+        <div class="text-cyan-400 font-bold mb-1">⚡ البرومبت الهندسي الاحترافي (Role + Few-Shot + Constraints):</div>
+        <p class="text-emerald-300 font-semibold mb-1">[الدور والهدف]: أنت مهندس أمن سيبراني وخبير بايثون. صمم وحدة تسجيل دخول آمنة لتطبيق Flask.</p>
+        <p class="text-gray-200">[القيود والمدخلات]: استخدم Argon2 لتجزئة كلمات المرور، وRate Limiting لمنع الهجمات العنيفة، وأعد المخرج كـ Clean Code موثق مع معالجة الاستثناءات.</p>
+        <div class="mt-2 text-cyan-300 border-t border-white/10 pt-2 text-[11px]">
+          🚀 <strong class="text-white">النتيجة:</strong> كود إنتاجي فوري، محصّن 100%، يختصر ساعات عمل ويطبق أعلى المعايير الهندسية.
+        </div>
+      `;
+    } else {
+      tabBad.className  = 'px-3 py-1 rounded-full font-bold transition teaser-tab-bad-active';
+      tabGood.className = 'px-3 py-1 rounded-full font-bold transition text-gray-400 hover:text-white';
+      box.innerHTML = `
+        <div class="text-red-400 font-bold mb-1">البرومبت التقليدي:</div>
+        <p class="text-gray-200">"اكتب لي كود بايثون لتسجيل الدخول في موقع ويب وكيف أحفظ البيانات"</p>
+        <div class="mt-2 text-gray-400 border-t border-white/10 pt-2 text-[11px]">
+          ⚠️ <strong class="text-yellow-300">النتيجة:</strong> كود بدائي، بدون معايير أمان، بدون تجزئة كلمات مرور، ويتطلب 4 رسائل إضافية لإصلاحه!
+        </div>
+      `;
+    }
+  };
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║   PASSWORD AUTHENTICATION & ADMIN VIEW TOGGLE            ║
+  // ╚══════════════════════════════════════════════════════════╝
+  function isAdminAuthenticated() {
+    return sessionStorage.getItem('admin_authenticated') === 'true';
+  }
+
+  function showAdminAuthModal() {
+    const modal = document.getElementById('admin-auth-modal');
+    const input = document.getElementById('admin-pass-input');
+    const errorEl = document.getElementById('admin-auth-error');
+    if (errorEl) errorEl.classList.add('hidden');
+    if (input) {
+      input.value = '';
+      input.classList.remove('border-red-500');
+    }
+    if (modal) modal.style.display = 'flex';
+    setTimeout(() => { if (input) input.focus(); }, 100);
+  }
+
+  window.closeAdminAuthModal = function() {
+    const modal = document.getElementById('admin-auth-modal');
+    if (modal) modal.style.display = 'none';
+    if (window.location.hash === '#admin') {
+      try {
+        history.pushState(null, null, window.location.pathname + window.location.search);
+      } catch(e) {
+        window.location.hash = '';
+      }
+    }
+  };
+
+  window.verifyAdminPassword = function() {
+    const input   = document.getElementById('admin-pass-input');
+    const errorEl = document.getElementById('admin-auth-error');
+    const box     = document.getElementById('admin-auth-box');
+    const val     = input ? input.value.trim() : '';
+
+    if (val === ADMIN_PIN) {
+      sessionStorage.setItem('admin_authenticated', 'true');
+      const modal = document.getElementById('admin-auth-modal');
+      if (modal) modal.style.display = 'none';
+
+      showToast('🔓 مرحباً بك في لوحة إدارة الحضور', 'success', 3500);
+      playAudioFeedback('success');
+      showAdminViewDirect();
+    } else {
+      // Failed: shake box, play error audio, show red error toast
+      playAudioFeedback('error');
+      showToast('❌ رمز الدخول (PIN) غير صحيح!', 'error', 3500);
+      if (errorEl) errorEl.classList.remove('hidden');
+      if (input) {
+        input.classList.add('border-red-500');
+        input.value = '';
+        input.focus();
+      }
+      if (box) {
+        box.classList.remove('shake');
+        void box.offsetWidth; // Trigger reflow to restart animation
+        box.classList.add('shake');
+      }
+    }
+  };
+
+  function showAdminViewDirect() {
+    const mainView   = document.getElementById('main-view');
+    const adminView  = document.getElementById('admin-view');
+    const ticketView = document.getElementById('ticket-view');
+
+    if (mainView)   mainView.style.display = 'none';
+    if (ticketView) ticketView.style.display = 'none';
+    if (adminView)  adminView.style.display = 'block';
+
+    if (window.location.hash !== '#admin') {
+      try { history.pushState(null, null, '#admin'); } catch(e) { window.location.hash = '#admin'; }
+    }
+
+    startScanner();
+    fetchStatsAndSeats();
+    fetchAttendeesList();
+  }
+
+  window.openAdmin = function() {
+    if (isAdminAuthenticated()) {
+      showAdminViewDirect();
+    } else {
+      showAdminAuthModal();
+    }
+  };
+
+  window.closeAdmin = function() {
+    const mainView   = document.getElementById('main-view');
+    const adminView  = document.getElementById('admin-view');
+    const ticketView = document.getElementById('ticket-view');
+
+    if (adminView) adminView.style.display = 'none';
+    stopScanner();
+
+    if (window.location.hash === '#admin') {
+      try {
+        history.pushState(null, null, window.location.pathname + window.location.search);
+      } catch(e) {
+        window.location.hash = '';
+      }
+    }
+
+    if (ticketView && ticketView.dataset.registered === 'true') {
+      ticketView.style.display = 'flex';
+    } else if (mainView) {
+      mainView.style.display = 'block';
+    }
+  };
+
+  window.logoutAdmin = function() {
+    sessionStorage.removeItem('admin_authenticated');
+    showToast('🔒 تم قفل لوحة المسؤول بنجاح', 'warning', 3000);
+    closeAdmin();
+  };
+
+  function handleRouting() {
+    if (window.location.hash === '#admin') {
+      openAdmin();
+    } else {
+      closeAdmin();
+    }
+  }
+
+  window.addEventListener('hashchange', handleRouting);
+  window.addEventListener('DOMContentLoaded', handleRouting);
+  window.addEventListener('load', handleRouting);
+
+  // ── QR Code Generator ─────────────────────────────────────
+  function generateQR(value, containerId, size = 200) {
+    return new Promise(resolve => {
+      const el = document.getElementById(containerId);
+      if (!el) { resolve(null); return; }
+      el.innerHTML = '';
+      new QRCode(el, {
+        text: value,
+        width: size,
+        height: size,
+        colorDark: '#0D0D2B',
+        colorLight: '#FFFFFF',
+        correctLevel: QRCode.CorrectLevel.H,
+      });
+      setTimeout(() => {
+        const c = el.querySelector('canvas');
+        const i = el.querySelector('img');
+        resolve(c ? c.toDataURL('image/png') : i ? i.src : null);
+      }, 300);
+    });
+  }
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║   REGISTRATION FORM & SUPABASE CRUD                       ║
+  // ╚══════════════════════════════════════════════════════════╝
+  const regForm    = document.getElementById('reg-form');
+  const submitBtn  = document.getElementById('submit-btn');
+  const btnText    = document.getElementById('btn-text');
+  const btnSpinner = document.getElementById('btn-spinner');
+
+  function setLoading(on) {
+    if (submitBtn) submitBtn.disabled = on;
+    if (btnText) btnText.classList.toggle('hidden', on);
+    if (btnSpinner) btnSpinner.classList.toggle('hidden', !on);
+    if (!on && btnText) btnText.textContent = '🚀 تأكيد التسجيل وحجز التذكرة';
+  }
+
+  // Helper to resolve active table (prompt_registrations with fallback to attendees)
+  async function getActiveTable(client) {
+    try {
+      const { error } = await client.from('prompt_registrations').select('id').limit(1);
+      if (!error) {
+        primaryTable = 'prompt_registrations';
+        return 'prompt_registrations';
+      }
+    } catch(e) {}
+    primaryTable = 'attendees';
+    return 'attendees';
+  }
+
+  regForm?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const full_name      = document.getElementById('full_name')?.value.trim();
+    const email          = document.getElementById('email')?.value.trim().toLowerCase();
+    const phone          = document.getElementById('phone')?.value.trim();
+    const academic_level = document.getElementById('academic_level')?.value;
+    const ai_experience  = document.getElementById('ai_experience')?.value;
+
+    if (!full_name || !email || !phone || !academic_level || !ai_experience) {
+      showToast('⚠️ يرجى ملء كافة حقول استمارة التسجيل', 'warning');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast('⚠️ صيغة البريد الإلكتروني غير صحيحة', 'warning');
+      return;
+    }
+
+    const client = getSupabase();
+    if (!client) {
+      showToast('⚠️ يرجى التحقق من مفاتيح Supabase أولاً', 'warning', 5000);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const targetTable = await getActiveTable(client);
+
+      // 1. Check duplicate email directly
+      const { data: existing, error: checkErr } = await client
+        .from(targetTable)
+        .select('id, full_name, email')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (existing) {
+        showToast(`⚠️ هذا البريد الإلكتروني مسجل مسبقاً باسم "${existing.full_name}"!`, 'warning', 6000);
+        playAudioFeedback('warning');
+        setLoading(false);
+        return;
+      }
+
+      // Count existing rows for ticket number formatting
+      const { count } = await client.from(targetTable).select('*', { count: 'exact', head: true });
+      const currentCount = typeof count === 'number' ? count + 1 : 1;
+
+      // 2. Insert into Supabase table
+      let insertedRow = null;
+      try {
+        const { data, error } = await client
+          .from(targetTable)
+          .insert([{
+            full_name,
+            email,
+            phone,
+            academic_level,
+            ai_experience,
+            specialty: academic_level,
+            study_year: academic_level,
+            ticket_number: currentCount,
+            attended: false,
+            email_sent: false
+          }])
+          .select()
+          .single();
+
+        if (error) {
+          // Check Postgres duplicate error code 23505
+          if (error.code === '23505' || (error.message && error.message.includes('unique'))) {
+            showToast('⚠️ هذا البريد مسجل مسبقاً في الدورة!', 'warning', 5000);
+            playAudioFeedback('warning');
+            setLoading(false);
+            return;
+          }
+          throw error;
+        }
+        insertedRow = data;
+      } catch (insertErr) {
+        // Schema fallback if custom columns missing
+        console.warn('Initial insert failed, applying fallback insert:', insertErr);
+        const { data: fbData, error: fbErr } = await client
+          .from(targetTable)
+          .insert([{
+            full_name,
+            email,
+            phone,
+            specialty: academic_level,
+            study_year: academic_level,
+            attended: false
+          }])
+          .select()
+          .single();
+
+        if (fbErr) {
+          if (fbErr.code === '23505' || (fbErr.message && fbErr.message.includes('unique'))) {
+            showToast('⚠️ هذا البريد مسجل مسبقاً في الدورة!', 'warning', 5000);
+            playAudioFeedback('warning');
+            setLoading(false);
+            return;
+          }
+          throw fbErr;
+        }
+        insertedRow = fbData;
+      }
+
+      currentUserId = insertedRow.id;
+      const formattedTicketNo = `LC-PE-${String(insertedRow.ticket_number || currentCount).padStart(3, '0')}`;
+
+      currentTicketData = {
+        id: insertedRow.id,
+        ticket_number: insertedRow.ticket_number || currentCount,
+        formatted_ticket_no: formattedTicketNo,
+        full_name,
+        email,
+        phone,
+        academic_level,
+        ai_experience
+      };
+
+      // 3. Generate QR Code
+      currentQRDataURL = await generateQR(insertedRow.id, 'qr-container', 220);
+      await generateQR(insertedRow.id, 'qr-hidden', 400);
+
+      // 4. Populate and display Ticket View (#ticket-view)
+      document.getElementById('ticket-name-msg').textContent = `أهلاً بك ${full_name}! تم تأكيد حجز مقعدك بنجاح 🎉`;
+      document.getElementById('ticket-attendee-name').textContent = full_name;
+      document.getElementById('ticket-attendee-level').textContent = academic_level;
+      document.getElementById('ticket-attendee-exp').textContent = ai_experience;
+      document.getElementById('ticket-code-badge').textContent = formattedTicketNo;
+      document.getElementById('ticket-id').textContent = `TICKET UUID: ${insertedRow.id}`;
+
+      // Reset email delivery badge to loading
+      const emailStatusText = document.getElementById('email-delivery-text');
+      const emailStatusInd  = document.getElementById('email-delivery-status-indicator');
+      if (emailStatusText) emailStatusText.textContent = `جارٍ إرسال التذكرة إلى ${email}...`;
+      if (emailStatusInd) {
+        emailStatusInd.textContent = '⚡ جاري الإرسال';
+        emailStatusInd.className = 'text-cyan-400 font-bold';
+      }
+
+      const ticketView = document.getElementById('ticket-view');
+      ticketView.dataset.registered = 'true';
+      document.getElementById('main-view').style.display = 'none';
+      ticketView.style.display = 'flex';
+
+      playAudioFeedback('success');
+      showToast(`🎊 مبروك يا ${full_name}، تم تأكيد تسجيلك!`, 'success', 5000);
+
+      // 5. Asynchronously trigger /api/send-ticket serverless function
+      fetch('/api/send-ticket', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: insertedRow.id,
+          ticket_number: insertedRow.ticket_number || currentCount,
+          full_name,
+          email,
+          academic_level,
+          phone,
+          ai_experience
+        })
+      })
+      .then(async response => {
+        if (response.ok) {
+          if (emailStatusText) emailStatusText.textContent = `تم إرسال التذكرة الرسمية بنجاح إلى ${email} ✉️`;
+          if (emailStatusInd) {
+            emailStatusInd.textContent = '✅ تم الإرسال';
+            emailStatusInd.className = 'text-emerald-400 font-bold';
+          }
+          // Update email_sent = true in Supabase
+          try {
+            await client.from(targetTable).update({ email_sent: true }).eq('id', insertedRow.id);
+          } catch(e) {}
+        } else {
+          console.warn('send-ticket API returned non-200 status');
+          if (emailStatusText) emailStatusText.textContent = `تم تأكيد حجزك! (احفظ التذكرة بصيغة PNG من الزر أدناه)`;
+          if (emailStatusInd) {
+            emailStatusInd.textContent = 'ℹ️ احفظ التذكرة';
+            emailStatusInd.className = 'text-yellow-400 font-bold';
+          }
+        }
+      })
+      .catch(apiErr => {
+        console.warn('API call error:', apiErr);
+        if (emailStatusText) emailStatusText.textContent = `تم تأكيد حجزك بنجاح! احتفظ بصورة التذكرة أدناه`;
+        if (emailStatusInd) {
+          emailStatusInd.textContent = 'ℹ️ احفظ التذكرة';
+          emailStatusInd.className = 'text-yellow-400 font-bold';
+        }
+      });
+
+      // Update seats and stats
+      fetchStatsAndSeats();
+
+    } catch (err) {
+      console.error('Registration error:', err);
+      playAudioFeedback('error');
+      showToast('❌ حدث خطأ أثناء التسجيل. تحقق من الاتصال وقاعدة البيانات.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  // ── Download VIP Cyber Pass (Canvas generator) ────────────
+  document.getElementById('download-ticket-btn')?.addEventListener('click', async () => {
+    try {
+      const hc = document.getElementById('qr-hidden');
+      const c = hc?.querySelector('canvas'), i = hc?.querySelector('img');
+      const qrSrc = c ? c.toDataURL('image/png') : i ? i.src : currentQRDataURL;
+
+      if (!qrSrc) {
+        showToast('⚠️ لم يتم توليد كود الـ QR بعد', 'warning');
+        return;
+      }
+
+      // Generate a stylish high-res VIP Cyber Pass Canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 1300;
+      const ctx = canvas.getContext('2d');
+
+      // Dark background
+      ctx.fillStyle = '#07071A';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Gradient border frame
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#6C63FF');
+      grad.addColorStop(0.5, '#00D4FF');
+      grad.addColorStop(1, '#FF6B35');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 12;
+      ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+      // Card Header
+      ctx.fillStyle = '#0D0D2B';
+      ctx.fillRect(45, 45, canvas.width - 90, 160);
+
+      ctx.fillStyle = '#00D4FF';
+      ctx.font = 'bold 36px Tajawal, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('LITHIUM TECHNOLOGY CLUB', canvas.width / 2, 105);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '22px Tajawal, sans-serif';
+      ctx.fillText('تذكرة دخول رسمية معتمدة — VIP CYBER PASS', canvas.width / 2, 150);
+
+      // Course Title
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 42px Tajawal, sans-serif';
+      ctx.fillText('فن هندسة الأوامر الذكية', canvas.width / 2, 270);
+
+      ctx.fillStyle = '#8888AA';
+      ctx.font = '24px Tajawal, sans-serif';
+      ctx.fillText('أسرار التحدث مع الذكاء الاصطناعي باحترافية', canvas.width / 2, 315);
+
+      ctx.fillStyle = '#00D4FF';
+      ctx.font = 'bold 24px Tajawal, sans-serif';
+      ctx.fillText('تقديم: المهندس عبد الرحمان جوامع (مدرب ومحتوى تقني)', canvas.width / 2, 360);
+
+      // Ticket Number Badge
+      ctx.fillStyle = '#6C63FF';
+      ctx.fillRect((canvas.width - 240) / 2, 385, 240, 45);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 22px Orbitron, sans-serif';
+      ctx.fillText(currentTicketData?.formatted_ticket_no || 'LC-PE-001', canvas.width / 2, 416);
+
+      // Divider line
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(80, 455);
+      ctx.lineTo(canvas.width - 80, 455);
+      ctx.stroke();
+
+      // Attendee details
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#E8E8F0';
+      ctx.font = 'bold 28px Tajawal, sans-serif';
+      ctx.fillText(`اسم المشارك: ${currentTicketData ? currentTicketData.full_name : ''}`, canvas.width - 90, 510);
+
+      ctx.font = '21px Tajawal, sans-serif';
+      ctx.fillStyle = '#8888AA';
+      ctx.fillText(`المستوى والتخصص: ${currentTicketData ? currentTicketData.academic_level : ''}`, canvas.width - 90, 555);
+      ctx.fillText(`البريد: ${currentTicketData ? currentTicketData.email : ''}`, canvas.width - 90, 595);
+
+      // Event details
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#FFD166';
+      ctx.fillText('📅 السبت، 15 نوفمبر 2026', 90, 510);
+      ctx.fillText('⏰ 14:00 - 16:30', 90, 555);
+      ctx.fillText('📍 جامعة محمد خيضر بسكرة', 90, 595);
+
+      // Draw QR Code
+      const qrImg = new Image();
+      qrImg.crossOrigin = 'anonymous';
+      qrImg.onload = () => {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect((canvas.width - 360) / 2, 650, 360, 360);
+        ctx.drawImage(qrImg, (canvas.width - 320) / 2, 670, 320, 320);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#8888AA';
+        ctx.font = '18px Orbitron, sans-serif';
+        ctx.fillText(`UUID: ${currentUserId || ''}`, canvas.width / 2, 1070);
+
+        ctx.fillStyle = '#00D4FF';
+        ctx.font = 'bold 22px Tajawal, sans-serif';
+        ctx.fillText('أبرز هذا الرمز عند مدخل القاعة لتسجيل حضورك الفوري', canvas.width / 2, 1130);
+
+        const a = document.createElement('a');
+        a.download = `VIP_Ticket_${(currentTicketData?.full_name || 'attendee').replace(/\s+/g, '_')}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        showToast('✅ تم تحميل تذكرتك الرسمية بنجاح!', 'success');
+      };
+      qrImg.onerror = () => {
+        const a = document.createElement('a');
+        a.download = `QR_Code_${currentUserId || 'ticket'}.png`;
+        a.href = qrSrc;
+        a.click();
+        showToast('✅ تم تحميل رمز QR بنجاح', 'success');
+      };
+      qrImg.src = qrSrc;
+
+    } catch (e) {
+      console.warn('Canvas error, falling back to direct QR:', e);
+      const hc = document.getElementById('qr-hidden');
+      const c = hc?.querySelector('canvas'), i = hc?.querySelector('img');
+      const src = c ? c.toDataURL('image/png') : i ? i.src : currentQRDataURL;
+      if (src) {
+        Object.assign(document.createElement('a'), { href: src, download: `Ticket_${currentUserId || 'code'}.png` }).click();
+        showToast('✅ تم تحميل كود التذكرة بنجاح', 'success');
+      }
+    }
+  });
+
+  // ── Back to Home Button ───────────────────────────────────
+  document.getElementById('back-to-home-btn')?.addEventListener('click', () => {
+    regForm?.reset();
+    ['qr-container', 'qr-hidden'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '';
+    });
+    currentQRDataURL = currentUserId = currentTicketData = null;
+    const ticketView = document.getElementById('ticket-view');
+    if (ticketView) {
+      ticketView.dataset.registered = 'false';
+      ticketView.style.display = 'none';
+    }
+    document.getElementById('main-view').style.display = 'block';
+  });
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║   ADMIN: QR SCANNER, LIVE KPIS & CSV EXPORT               ║
+  // ╚══════════════════════════════════════════════════════════╝
+
+  // Process attendance update on QR scan
+  async function processAttendance(studentId) {
+    const rc = document.getElementById('scan-result-card');
+    const ri = document.getElementById('scan-result-inner');
+    if (rc) rc.style.display = 'block';
+
+    const client = getSupabase();
+    if (!client) {
+      if (ri) ri.innerHTML = '<p class="font-bold text-red-400">⚠️ لم يتم ربط Supabase بعد بالملف</p>';
+      playAudioFeedback('error');
+      showToast('⚠️ يرجى إعداد مفاتيح Supabase أولاً', 'warning');
+      return;
+    }
+
+    try {
+      const targetTable = await getActiveTable(client);
+
+      // 1. Query student
+      const { data: a, error } = await client
+        .from(targetTable)
+        .select('*')
+        .eq('id', studentId)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!a) {
+        playAudioFeedback('error');
+        showToast('❌ كود QR غير مسجل في النظام!', 'error', 4500);
+        if (ri) ri.innerHTML = `
+          <div class="flex items-start gap-3">
+            <span style="font-size:2.2rem; flex-shrink:0;">❌</span>
+            <div class="text-right">
+              <p class="font-bold text-red-400 text-lg">QR Code غير مسجل!</p>
+              <p style="color:var(--clr-muted);font-size:.85rem;margin-top:.25rem;">لم يتم العثور على أي مشارك مسجل بهذا المعرّف في قاعدة البيانات.</p>
+              <p style="font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--clr-muted);margin-top:.4rem;" dir="ltr">${studentId}</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      if (a.attended) {
+        playAudioFeedback('warning');
+        showToast(`⚠️ المشارك "${a.full_name}" سبق تسجيل حضوره!`, 'warning', 5000);
+        if (ri) ri.innerHTML = `
+          <div class="flex items-start gap-3">
+            <span style="font-size:2.2rem; flex-shrink:0;">⚠️</span>
+            <div class="text-right flex-1">
+              <div class="inline-block px-2.5 py-0.5 rounded text-xs font-bold mb-1" style="background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.5); color:#FCD34D;">
+                تم تسجيل الحضور مسبقاً!
+              </div>
+              <p class="font-bold text-xl text-white mt-1">${a.full_name}</p>
+              <p style="color:var(--clr-muted);font-size:.85rem;">${a.academic_level || a.specialty || ''}</p>
+              <p style="color:#FCD34D;font-size:.8rem;margin-top:.4rem;">تحذير: هذا الكود تم مسحه من قبل ولا يمكن تكراره.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // 2. Mark attended = true
+      const { error: updateErr } = await client
+        .from(targetTable)
+        .update({ attended: true })
+        .eq('id', studentId);
+
+      if (updateErr) throw updateErr;
+
+      // Success feedback
+      playAudioFeedback('success');
+      showToast(`✅ تم تسجيل حضور المشارك ${a.full_name} بنجاح!`, 'success', 5000);
+
+      if (ri) ri.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.5);">
+            ✅
+          </div>
+          <div class="flex-1 text-right">
+            <span class="badge" style="background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.5);color:#6EFFC5; font-size:0.75rem;">
+              تم تأكيد الحضور الآن بنجاح
+            </span>
+            <p class="font-bold text-2xl text-white mt-1.5">${a.full_name}</p>
+            <p style="color:var(--clr-muted);font-size:.85rem;margin-top:.2rem;">${a.academic_level || a.specialty || ''}</p>
+            <p style="color:var(--clr-cyan);font-size:.8rem;margin-top:.3rem;" dir="ltr">${a.email || ''}</p>
+          </div>
+        </div>
+      `;
+
+      fetchStatsAndSeats();
+      fetchAttendeesList();
+
+    } catch (err) {
+      console.error('Scan error:', err);
+      playAudioFeedback('error');
+      if (ri) ri.innerHTML = '<p class="font-bold text-red-400">❌ خطأ في الاتصال بقاعدة البيانات</p>';
+      showToast('❌ خطأ في الاتصال بقاعدة البيانات', 'error');
+    }
+  }
+
+  // Auto-scan callback with strict 4-second debounce
+  async function onScanSuccess(decodedText) {
+    const studentId = (decodedText || '').trim();
+    if (!studentId) return;
+
+    if (isScanLocked) return;
+    isScanLocked = true;
+
+    const indicator = document.getElementById('scanner-status-indicator');
+    if (indicator) {
+      indicator.innerHTML = '<span style="color:var(--clr-cyan);">⚡ جارٍ مسح الكود وتسجيل الحضور...</span>';
+    }
+
+    try {
+      await processAttendance(studentId);
+    } finally {
+      let remaining = 4;
+      const interval = setInterval(() => {
+        remaining -= 1;
+        if (indicator && isScanLocked) {
+          indicator.innerHTML = `<span style="color:#FCD34D;">⏳ جارٍ الانتظار (${remaining}s) لتجنب التكرار...</span>`;
+        }
+        if (remaining <= 0) {
+          clearInterval(interval);
+          isScanLocked = false;
+          if (indicator) {
+            indicator.innerHTML = '<span style="color:#6EFFC5;">الكاميرا نشطة وجاهزة للمسح 🟢</span>';
+          }
+        }
+      }, 1000);
+    }
+  }
+
+  // Scanner initialization
+  async function startScanner() {
+    const readerEl = document.getElementById('reader');
+    if (!readerEl) return;
+    if (isScannerRunning) return;
+
+    try {
+      if (typeof Html5Qrcode === 'undefined') {
+        console.warn('Html5Qrcode not ready');
+        return;
+      }
+      html5QrScanner = new Html5Qrcode('reader');
+      const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
+      await html5QrScanner.start({ facingMode: 'environment' }, config, onScanSuccess, () => {});
+      isScannerRunning = true;
+    } catch (err) {
+      console.warn('Camera autostart failed, showing fallback selector:', err);
+      try {
+        if (typeof Html5QrcodeScanner !== 'undefined') {
+          const scannerUi = new Html5QrcodeScanner('reader', { fps: 10, qrbox: 250 });
+          scannerUi.render(onScanSuccess, () => {});
+          isScannerRunning = true;
+        }
+      } catch (uiErr) {
+        console.error('Html5QrcodeScanner fallback error:', uiErr);
+      }
+    }
+  }
+
+  function stopScanner() {
+    if (html5QrScanner && isScannerRunning) {
+      html5QrScanner.stop().catch(() => {}).finally(() => {
+        isScannerRunning = false;
+        const reader = document.getElementById('reader');
+        if (reader) reader.innerHTML = '';
+      });
+    }
+  }
+
+  // Manual ID check
+  document.getElementById('manual-check-btn')?.addEventListener('click', () => {
+    const input = document.getElementById('manual-id-input');
+    const val = input ? input.value.trim() : '';
+    if (!val) {
+      showToast('⚠️ يرجى إدخال معرّف الطالب (UUID)', 'warning');
+      return;
+    }
+    processAttendance(val);
+  });
+
+  // ── Live Stats & Remaining Seats ──────────────────────────
+  async function fetchStatsAndSeats() {
+    const client = getSupabase();
+    if (!client) return;
+    try {
+      const targetTable = await getActiveTable(client);
+      const { data, error } = await client.from(targetTable).select('attended, email_sent');
+      if (error || !data) return;
+
+      const total    = data.length;
+      const attended = data.filter(r => r.attended).length;
+      const emails   = data.filter(r => r.email_sent).length;
+      const rate     = total > 0 ? Math.round((attended / total) * 100) : 0;
+      const left     = Math.max(0, MAX_SEATS - total);
+
+      // Update KPIs
+      const kTotal    = document.getElementById('kpi-total');
+      const kAttended = document.getElementById('kpi-attended');
+      const kRate     = document.getElementById('kpi-rate');
+      const kEmails   = document.getElementById('kpi-emails');
+      const seatsLeft = document.getElementById('seats-left-count');
+
+      if (kTotal)    kTotal.textContent    = total;
+      if (kAttended) kAttended.textContent = attended;
+      if (kRate)     kRate.textContent     = `${rate}%`;
+      if (kEmails)   kEmails.textContent   = emails;
+
+      if (seatsLeft) {
+        seatsLeft.textContent = `${left} مقعداً متبقياً`;
+        if (left <= 10) {
+          seatsLeft.className = 'text-sm font-bold text-orange-400';
+        } else {
+          seatsLeft.className = 'text-sm font-bold text-cyan-400';
+        }
+      }
+
+    } catch (e) {
+      console.warn('Stats fetch error:', e);
+    }
+  }
+
+  // ── Attendees List with Search & Manual Toggle ────────────
+  async function fetchAttendeesList() {
+    const client = getSupabase();
+    const listEl = document.getElementById('attendees-list');
+    const countBadge = document.getElementById('attendees-count-badge');
+    if (!listEl) return;
+
+    if (!client) {
+      listEl.innerHTML = '<p style="color:var(--clr-orange);text-align:center;padding:1.5rem;">⚠️ يرجى إعداد مفاتيح Supabase في الكود لعرض القائمة</p>';
+      return;
+    }
+
+    try {
+      const targetTable = await getActiveTable(client);
+      const { data, error } = await client
+        .from(targetTable)
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(200);
+
+      if (error || !data) {
+        listEl.innerHTML = '<p style="color:var(--clr-orange);text-align:center;padding:1rem;">خطأ في تحميل البيانات</p>';
+        return;
+      }
+
+      allAttendeesCache = data;
+      if (countBadge) countBadge.textContent = data.length;
+      renderAttendees(data);
+
+    } catch (e) {
+      console.warn('List fetch error:', e);
+    }
+  }
+
+  function renderAttendees(data) {
+    const listEl = document.getElementById('attendees-list');
+    if (!listEl) return;
+
+    if (!data.length) {
+      listEl.innerHTML = '<p style="color:var(--clr-muted);text-align:center;padding:2rem;">لا توجد نتائج مطابقة</p>';
+      return;
+    }
+
+    listEl.innerHTML = data.map((r, index) => {
+      const ticketNo = r.ticket_number ? `LC-PE-${String(r.ticket_number).padStart(3, '0')}` : `#${data.length - index}`;
+      return `
+        <div class="attendee-row">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-white/10 text-cyan-300" dir="ltr">${ticketNo}</span>
+            <div class="flex flex-col gap-0.5 text-right">
+              <p class="font-bold text-sm text-white">${r.full_name}</p>
+              <p style="color:var(--clr-muted);font-size:.78rem;">
+                ${r.academic_level || r.specialty || ''}
+                ${r.phone ? `· <span dir="ltr" class="text-gray-300">${r.phone}</span>` : ''}
+                ${r.email ? `· <span dir="ltr" class="text-gray-400">${r.email}</span>` : ''}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              onclick="toggleAttendeeStatus('${r.id}', ${!r.attended})"
+              class="px-2.5 py-1 rounded-full text-xs font-bold transition ${r.attended ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30' : 'bg-red-500/10 text-red-300 border border-red-500/30 hover:bg-red-500/20'}"
+            >
+              ${r.attended ? '✓ حاضر' : '✗ غائب'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Toggle single attendee attendance manually
+  window.toggleAttendeeStatus = async function(studentId, newStatus) {
+    const client = getSupabase();
+    if (!client) return;
+    try {
+      const targetTable = await getActiveTable(client);
+      const { error } = await client.from(targetTable).update({ attended: newStatus }).eq('id', studentId);
+      if (error) throw error;
+      showToast(newStatus ? '✅ تم تأكيد حضور المشارك' : 'ℹ️ تم إلغاء تأكيد الحضور', 'success', 2500);
+      playAudioFeedback(newStatus ? 'success' : 'warning');
+      fetchStatsAndSeats();
+      fetchAttendeesList();
+    } catch (e) {
+      console.error('Toggle error:', e);
+      showToast('❌ تعذر تحديث الحالة', 'error');
+    }
+  };
+
+  // Search filter
+  document.getElementById('attendee-search-input')?.addEventListener('input', e => {
+    const q = (e.target.value || '').trim().toLowerCase();
+    if (!q) {
+      renderAttendees(allAttendeesCache);
+      return;
+    }
+    const filtered = allAttendeesCache.filter(r => {
+      const name  = (r.full_name || '').toLowerCase();
+      const mail  = (r.email || '').toLowerCase();
+      const phone = (r.phone || '').toLowerCase();
+      const num   = String(r.ticket_number || '');
+      return name.includes(q) || mail.includes(q) || phone.includes(q) || num.includes(q);
+    });
+    renderAttendees(filtered);
+  });
+
+  // Refresh button
+  document.getElementById('refresh-list-btn')?.addEventListener('click', () => {
+    fetchStatsAndSeats();
+    fetchAttendeesList();
+    showToast('🔄 تم تحديث قائمة الحضور', 'success', 2500);
+  });
+
+  // ── CSV Export Function ───────────────────────────────────
+  document.getElementById('export-csv-btn')?.addEventListener('click', () => {
+    if (!allAttendeesCache || !allAttendeesCache.length) {
+      showToast('⚠️ لا توجد بيانات مسجلة لتصديرها', 'warning');
+      return;
+    }
+
+    try {
+      const headers = ['رقم التذكرة', 'الاسم واللقب', 'البريد الإلكتروني', 'رقم الهاتف', 'المستوى الدراسي', 'مستوى الخبرة', 'حالة الحضور', 'إرسال التذكرة', 'تاريخ التسجيل', 'المعرف UUID'];
+      const rows = allAttendeesCache.map(r => [
+        `"LC-PE-${String(r.ticket_number || '').padStart(3, '0')}"`,
+        `"${(r.full_name || '').replace(/"/g, '""')}"`,
+        `"${(r.email || '').replace(/"/g, '""')}"`,
+        `"${(r.phone || '').replace(/"/g, '""')}"`,
+        `"${(r.academic_level || r.specialty || '').replace(/"/g, '""')}"`,
+        `"${(r.ai_experience || '').replace(/"/g, '""')}"`,
+        r.attended ? '"حاضر"' : '"غائب"',
+        r.email_sent ? '"نعم"' : '"لا"',
+        `"${r.created_at || ''}"`,
+        `"${r.id || ''}"`
+      ]);
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Lithium_Prompt_Engineering_Attendees_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showToast('📊 تم تصدير ملف CSV بنجاح!', 'success');
+    } catch (e) {
+      console.error('CSV export error:', e);
+      showToast('❌ تعذر تصدير ملف CSV', 'error');
+    }
+  });
+
+  // ── Supabase Realtime Subscription ────────────────────────
+  function setupRealtime() {
+    const client = getSupabase();
+    if (!client) return;
+    try {
+      const channel = client
+        .channel('public:prompt_registrations_realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: primaryTable }, () => {
+          fetchStatsAndSeats();
+          fetchAttendeesList();
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Realtime channel subscribed successfully.');
+          }
+        });
+    } catch (e) {
+      console.warn('Realtime subscription error:', e);
+    }
+  }
+
+  // Initial stats & seat check
+  window.addEventListener('DOMContentLoaded', () => {
+    fetchStatsAndSeats();
+    setupRealtime();
+  });
+  </script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6C63FF',
+            cyan:    '#00D4FF',
+            orange:  '#FF6B35',
+            gold:    '#FFD166'
+          },
+          fontFamily: {
+            tajawal:  ['Tajawal','sans-serif'],
+            orbitron: ['Orbitron','sans-serif']
+          },
+        },
+      },
+    };
+  </script>
+</body>
+</html>

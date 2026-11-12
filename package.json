@@ -1,0 +1,16 @@
+{
+  "name": "lithium-prompt-engineering-workshop",
+  "version": "1.0.0",
+  "description": "Registration platform for Prompt Engineering Workshop by Lithium Club",
+  "main": "api/send-ticket.js",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.16",
+    "qrcode": "^1.5.4"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
